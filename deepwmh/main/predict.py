@@ -12,6 +12,35 @@ from deepwmh.utilities.file_ops import abs_path, cp, dir_exist, file_exist, gd, 
 import sys
 sys.setrecursionlimit(50000)
 
+import numpy as np
+
+def calculate_volumes(in_image_path, seg_image_path):
+    image_data, image_header = load_nifti(in_image_path)
+    seg_data, seg_header = load_nifti(seg_image_path)
+    
+    voxel_dims = get_nifti_pixdim(in_image_path)
+    print("Voxel Dimensions (in mm):", voxel_dims)
+    
+    voxel_volume = voxel_dims[0] * voxel_dims[1] * voxel_dims[2]  
+    voxel_volume_ml = voxel_volume * 0.001  # Convert to mL
+    
+    brain_volume_mm3 = np.sum(image_data > 0) * voxel_volume
+    seg_volume_mm3 = np.sum(seg_data > 0) * voxel_volume
+    
+    brain_volume_ml = brain_volume_mm3 * 0.001
+    seg_volume_ml = seg_volume_mm3 * 0.001
+    
+    seg_percentage = (seg_volume_mm3 / brain_volume_mm3) * 100 if brain_volume_mm3 > 0 else 0
+
+    # Print the results
+    print(f"Brain Volume (approx): {brain_volume_mm3:.2f} mm³ / {brain_volume_ml:.2f} mL")
+    print(f"Segmented Volume: {seg_volume_mm3:.2f} mm³ / {seg_volume_ml:.2f} mL")
+    print(f"Segmented Percentage: {seg_percentage:.2f}%")
+    print(f"Single Voxel Volume: {voxel_volume:.2f} mm³ / {voxel_volume_ml:.6f} mL")
+    
+    return brain_volume_mm3, seg_volume_mm3, seg_percentage
+
+
 def overlay_segmentation_on_image(in_image_path, seg_image_path, out_overlay_path):
     image_data, image_header = load_nifti(in_image_path)
     seg_data, _ = load_nifti(seg_image_path)
@@ -227,4 +256,12 @@ def main():
 	print('>>> Segmentation results can be found in folder "%s".' % segmentation_output)
 	print('')
 
+	for case_name, input_image in zip(args.case_names, args.input_images):
+		original_image_path = input_image
+		seg_image_path = join_path(post_fov_folder, case_name + '.nii.gz') 
+		overlay_image_path = join_path("./", f"{case_name}_overlay.nii.gz")
+		overlay_segmentation_on_image(original_image_path, seg_image_path, overlay_image_path)
 
+		#brain_mask_path = join_path(post_fov_folder, case_name + '_brain_mask.nii.gz')  # Assuming brain mask path
+		seg_volume, brain_volume, seg_percentage = calculate_volumes(original_image_path, seg_image_path)
+		

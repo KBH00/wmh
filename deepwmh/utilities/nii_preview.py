@@ -379,18 +379,7 @@ def nii_draw_colorbar(output_image, colormap='grayscale', size=[256,48]):
 
     imsave( output_image, np.transpose(bardata, [1,0,2]), vmin=0.0, vmax=1.0)
 
-def overlay_segmentation_on_image(in_image_path, seg_image_path, out_overlay_path):
-    # Load the original image and the segmentation
-    image_data, image_header = load_nifti(in_image_path)
-    seg_data, _ = load_nifti(seg_image_path)
 
-    # Create an overlay by combining the original image and the segmentation
-    overlay_data = np.copy(image_data)
-    overlay_data[seg_data > 0] = np.max(image_data)  # Set segmentation area to max intensity or choose a color
-
-    # Save the overlayed image
-    save_nifti(overlay_data, image_header, out_overlay_path)
-    
 from PIL import Image
 import numpy as np
 
