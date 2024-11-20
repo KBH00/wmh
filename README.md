@@ -1,2 +1,0 @@
-# wmh
-white matter hyperintensity

@@ -451,6 +451,9 @@ def nii_as_gif(filepath, outpath, axis='axial', resample_image=True,
         data, lesion = data[::-1, ::-1, ::-1], lesion[::-1, ::-1, ::-1]
 
     frames = []
+    slice_start = 20
+    slice_end = data.shape[0]
+
     for sid in range(slice_start, slice_end, slice_step):
         data_slice = {'sagittal': data[sid, :, :], 'coronal': data[:, sid, :], 'axial': data[:, :, sid]}[axis]
         lesion_slice = {'sagittal': lesion[sid, :, :], 'coronal': lesion[:, sid, :], 'axial': lesion[:, :, sid]}[axis]

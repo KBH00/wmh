@@ -32,7 +32,6 @@ def calculate_volumes(in_image_path, seg_image_path):
     
     seg_percentage = (seg_volume_mm3 / brain_volume_mm3) * 100 if brain_volume_mm3 > 0 else 0
 
-    # Print the results
     print(f"Brain Volume (approx): {brain_volume_mm3:.2f} mm³ / {brain_volume_ml:.2f} mL")
     print(f"Segmented Volume: {seg_volume_mm3:.2f} mm³ / {seg_volume_ml:.2f} mL")
     print(f"Segmented Percentage: {seg_percentage:.2f}%")
@@ -163,13 +162,15 @@ def main():
 	raw_seg_folder  = mkdir(join_path(args.output_folder, '002_Segmentations', '001_raw'))
 	post_3mm_folder = mkdir(join_path(args.output_folder, '002_Segmentations', '002_postproc_3mm'))
 	post_fov_folder = mkdir(join_path(args.output_folder, '002_Segmentations', '003_postproc_fov'))
-
+	import nibabel as nib
 	# preprocessing
 	print('Pre-processing test images for prediction.')
 	# bias field correction
 	if not args.skip_bfc:
 		n4_tasks = []
 		for case_name, input_image in zip(test_dataset['case'], test_dataset['flair']):
+			test_img = nib.load(input_image)
+			print(test_img.shape)
 			n4_image = join_path(image_folder, '%s_0000.nii.gz' % case_name)
 			n4_tasks.append( (input_image, n4_image) )
 		run_parallel(_parallel_do_bias_field_correction, n4_tasks, 4, 'preprocessing')
@@ -265,3 +266,4 @@ def main():
 		#brain_mask_path = join_path(post_fov_folder, case_name + '_brain_mask.nii.gz')  # Assuming brain mask path
 		seg_volume, brain_volume, seg_percentage = calculate_volumes(original_image_path, seg_image_path)
 		
+
