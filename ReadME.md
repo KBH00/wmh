@@ -9,3 +9,5 @@ Choose the ROBEX dir path in GUI.
 model download link : https://drive.google.com/drive/folders/1CDJkY5F95sW638UGjohWDqXvPtBTI1w3?usp=share
 _link
 put in the ./model/
+
+In general, you have the robex dircectory in your wmh dircectory.
