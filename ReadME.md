@@ -6,3 +6,6 @@ Download and unzip ROBEX (Robust Brain Extraction) from "https://www.nitrc.org/p
 Choose the ROBEX dir path in GUI.
 
 
+model download link : https://drive.google.com/drive/folders/1CDJkY5F95sW638UGjohWDqXvPtBTI1w3?usp=share
+_link
+put in the ./model/
